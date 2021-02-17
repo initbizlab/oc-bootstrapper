@@ -29,6 +29,21 @@ trait ManageDirectory
     }
 
     /**
+     * Soft Copy file from sourceFile to targetFile
+     *
+     * @param string $sourceFile
+     * @param string $targetFile
+     */
+    public function softCopy($sourceFile, $targetFile)
+    {
+        if ( ! $this->fileExists($targetFile)) {
+            copy($sourceFile, $targetFile);
+        }
+
+        return true;
+    }
+
+    /**
      * Replaces all placeholder Variables in a file.
      *
      * @param $file
@@ -198,5 +213,29 @@ trait ManageDirectory
     public function removeGitRepo($path)
     {
         $this->rmdir($path . DS . '.git');
+    }
+
+    /**
+     * Removes the directory recursively.
+     *
+     * @param string $dir
+     * @return void
+     */
+    public function rrmdir(string $dir)
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object !== "." && $object !== "..") {
+                    if (filetype($dir . "/" . $object) === "dir") {
+                        $this->rrmdir($dir . "/" . $object);
+                    } else {
+                        unlink($dir . "/" . $object);
+                    }
+                }
+            }
+            reset($objects);
+            rmdir($dir);
+        }
     }
 }

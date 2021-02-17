@@ -41,9 +41,9 @@ class OctoberCms
         }
 
         $this->fetchZip()
-             ->extract()
-             ->fetchHtaccess()
-             ->cleanUp();
+            ->extract()
+            ->fetchHtaccess()
+            ->cleanUp();
 
         return $this;
     }
@@ -88,7 +88,7 @@ class OctoberCms
     {
         $target = $this->path('.htaccess');
 
-        if (! $this->fileExists($target)) {
+        if (!$this->fileExists($target)) {
             $contents = file_get_contents('https://raw.githubusercontent.com/octobercms/october/1.1/.htaccess');
             file_put_contents(getcwd() . DS . '.htaccess', $contents);
         }
@@ -138,7 +138,6 @@ class OctoberCms
      */
     protected function alreadyInstalled($force)
     {
-        return ! $force && is_dir(getcwd() . DS . 'bootstrap') && is_dir(getcwd() . DS . 'modules');
+        return !$force && is_dir(getcwd() . DS . 'bootstrap') && is_dir(getcwd() . DS . 'modules');
     }
-
 }

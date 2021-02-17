@@ -164,7 +164,7 @@ class InstallCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ( ! class_exists('ZipArchive')) {
+        if (!class_exists('ZipArchive')) {
             throw new RuntimeException('The Zip PHP extension is not installed. Please install it and try again.');
         }
 
@@ -172,7 +172,7 @@ class InstallCommand extends Command
 
         $this->force = $input->getOption('force');
 
-        $this->firstRun = ! $this->dirExists($this->path('bootstrap')) || $this->force;
+        $this->firstRun = !$this->dirExists($this->path('bootstrap')) || $this->force;
 
         if ($input->getOption('templates-from')) {
             $remote = $input->getOption('templates-from');
@@ -181,7 +181,7 @@ class InstallCommand extends Command
 
         $this->makeConfig();
 
-        if ( ! empty($php = $input->getOption('php'))) {
+        if (!empty($php = $input->getOption('php'))) {
             $this->setPhp($php);
         }
 
@@ -309,14 +309,16 @@ class InstallCommand extends Command
     {
         foreach ($pluginsDeclarations as $pluginDeclaration) {
             $pluginInstalled = $this->pluginManager->isInstalled($pluginDeclaration);
-            $installPlugin = ! $pluginInstalled;
+            $installPlugin = !$pluginInstalled;
 
             list($update, $vendor, $plugin, $remote, $branch) = $this->pluginManager->parseDeclaration($pluginDeclaration);
 
-            if ($pluginInstalled && ($update || ! $this->gitignore->hasPluginHeader($vendor, $plugin))) {
+            if ($pluginInstalled && ($update || !$this->gitignore->hasPluginHeader($vendor, $plugin))) {
                 if ($pluginInstalled && $remote) {
-                    $this->write("Removing ${vendor}.${plugin} directory to re-download the newest version...",
-                        'comment');
+                    $this->write(
+                        "Removing ${vendor}.${plugin} directory to re-download the newest version...",
+                        'comment'
+                    );
 
                     $this->pluginManager->removeDir($pluginDeclaration);
                     $installPlugin = true;
@@ -406,7 +408,7 @@ class InstallCommand extends Command
 
     protected function cleanup()
     {
-        if ( ! $this->firstRun) {
+        if (!$this->firstRun) {
             return;
         }
 
@@ -424,7 +426,7 @@ class InstallCommand extends Command
         // If SQLite database does not exist, create it
         if ($this->config->database['connection'] === 'sqlite') {
             $path = $this->config->database['database'];
-            if ( ! $this->fileExists($path) && is_dir(dirname($path))) {
+            if (!$this->fileExists($path) && is_dir(dirname($path))) {
                 $this->write("Creating $path ...");
                 touch($path);
             }

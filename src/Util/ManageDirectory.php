@@ -21,7 +21,7 @@ trait ManageDirectory
     {
         copy($sourceFile, $targetFile);
 
-        if ( ! $this->fileExists($targetFile)) {
+        if (!$this->fileExists($targetFile)) {
             throw new RuntimeException('File ' . $targetFile . ' could not be created');
         }
 
@@ -36,7 +36,7 @@ trait ManageDirectory
      */
     public function softCopy($sourceFile, $targetFile)
     {
-        if ( ! $this->fileExists($targetFile)) {
+        if (!$this->fileExists($targetFile)) {
             copy($sourceFile, $targetFile);
         }
 
@@ -153,7 +153,7 @@ trait ManageDirectory
      */
     public function rmdir($dir)
     {
-        if ( ! $this->dirExists($dir)) {
+        if (!$this->dirExists($dir)) {
             return true;
         }
 
@@ -176,7 +176,7 @@ trait ManageDirectory
      */
     public function mkdir($dir)
     {
-        if ( ! @mkdir($dir) && ! is_dir($dir)) {
+        if (!@mkdir($dir) && !is_dir($dir)) {
             throw new RuntimeException('Could not create directory: ' . $dir);
         }
 

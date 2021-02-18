@@ -111,6 +111,7 @@ class OctoberCms
         $directory = getcwd();
         $source    = $directory . DS . 'october-1.1';
 
+        //TODO
         (new Process(sprintf('mv -n %s %s', $source . '/*', $directory)))->run();
         (new Process(sprintf('rm -rf %s', $source)))->run();
 

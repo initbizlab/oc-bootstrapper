@@ -29,7 +29,7 @@ trait ManageDirectory
     }
 
     /**
-     * Soft Copy file from sourceFile to targetFile
+     * Check if the file exists, if not copy it.
      *
      * @param string $sourceFile
      * @param string $targetFile

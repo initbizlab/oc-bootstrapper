@@ -164,7 +164,7 @@ class InstallCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ( ! class_exists('ZipArchive')) {
+        if (!class_exists('ZipArchive')) {
             throw new RuntimeException('The Zip PHP extension is not installed. Please install it and try again.');
         }
 
@@ -172,7 +172,7 @@ class InstallCommand extends Command
 
         $this->force = $input->getOption('force');
 
-        $this->firstRun = ! $this->dirExists($this->path('bootstrap')) || $this->force;
+        $this->firstRun = !$this->dirExists($this->path('bootstrap')) || $this->force;
 
         if ($input->getOption('templates-from')) {
             $remote = $input->getOption('templates-from');
@@ -181,7 +181,7 @@ class InstallCommand extends Command
 
         $this->makeConfig();
 
-        if ( ! empty($php = $input->getOption('php'))) {
+        if (!empty($php = $input->getOption('php'))) {
             $this->setPhp($php);
         }
 
@@ -197,9 +197,6 @@ class InstallCommand extends Command
 
             return false;
         }
-
-        $this->write('Patching composer.json...');
-        $this->patchComposerJson();
 
         $this->write('Installing composer dependencies...');
         $this->composer->install();
@@ -312,14 +309,16 @@ class InstallCommand extends Command
     {
         foreach ($pluginsDeclarations as $pluginDeclaration) {
             $pluginInstalled = $this->pluginManager->isInstalled($pluginDeclaration);
-            $installPlugin = ! $pluginInstalled;
+            $installPlugin = !$pluginInstalled;
 
             list($update, $vendor, $plugin, $remote, $branch) = $this->pluginManager->parseDeclaration($pluginDeclaration);
 
-            if ($pluginInstalled && ($update || ! $this->gitignore->hasPluginHeader($vendor, $plugin))) {
+            if ($pluginInstalled && ($update || !$this->gitignore->hasPluginHeader($vendor, $plugin))) {
                 if ($pluginInstalled && $remote) {
-                    $this->write("Removing ${vendor}.${plugin} directory to re-download the newest version...",
-                        'comment');
+                    $this->write(
+                        "Removing ${vendor}.${plugin} directory to re-download the newest version...",
+                        'comment'
+                    );
 
                     $this->pluginManager->removeDir($pluginDeclaration);
                     $installPlugin = true;
@@ -404,12 +403,12 @@ class InstallCommand extends Command
     protected function copyReadme()
     {
         $template = $this->getTemplate('README.md');
-        $this->copy($template, 'README.md');
+        $this->softCopy($template, 'README.md');
     }
 
     protected function cleanup()
     {
-        if ( ! $this->firstRun) {
+        if (!$this->firstRun) {
             return;
         }
 
@@ -427,56 +426,10 @@ class InstallCommand extends Command
         // If SQLite database does not exist, create it
         if ($this->config->database['connection'] === 'sqlite') {
             $path = $this->config->database['database'];
-            if ( ! $this->fileExists($path) && is_dir(dirname($path))) {
+            if (!$this->fileExists($path) && is_dir(dirname($path))) {
                 $this->write("Creating $path ...");
                 touch($path);
             }
-        }
-    }
-
-    /**
-     * Add oc-bootstrapper as a local dependency.
-     *
-     * @return void
-     */
-    protected function patchComposerJson()
-    {
-        if ( ! $this->fileExists('composer.json')) {
-            $this->write('Failed to locate composer.json in local directory', 'error');
-
-            return;
-        }
-
-        $structure = json_decode(file_get_contents($this->path('composer.json')));
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->write('Failed to parse composer.json', 'error');
-
-            return;
-        }
-
-        $structure->require->{'offline/oc-bootstrapper'} = '^' . VERSION;
-
-        $contents = json_encode($structure, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        if (file_put_contents($this->path('composer.json'), $contents) === false) {
-            $this->write('Failed to write new composer.json', 'error');
-        }
-    }
-
-    private function rrmdir(string $dir)
-    {
-        if (is_dir($dir)) {
-            $objects = scandir($dir);
-            foreach ($objects as $object) {
-                if ($object !== "." && $object !== "..") {
-                    if (filetype($dir . "/" . $object) === "dir") {
-                        $this->rrmdir($dir . "/" . $object);
-                    } else {
-                        unlink($dir . "/" . $object);
-                    }
-                }
-            }
-            reset($objects);
-            rmdir($dir);
         }
     }
 }

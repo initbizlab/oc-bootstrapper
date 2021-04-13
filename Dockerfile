@@ -1,4 +1,4 @@
-FROM composer:1.10
+FROM composer:latest
 
 RUN apk add --no-cache \
     curl \
@@ -16,7 +16,6 @@ RUN docker-php-ext-install pdo \
     zip \
     posix
 
-RUN composer global require --prefer-dist hirak/prestissimo --no-interaction
 RUN composer global require --prefer-dist laravel/envoy offline/oc-bootstrapper --no-interaction
 
 RUN ln -s /composer/vendor/bin/october /usr/bin/october

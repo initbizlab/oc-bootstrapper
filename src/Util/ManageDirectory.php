@@ -21,8 +21,23 @@ trait ManageDirectory
     {
         copy($sourceFile, $targetFile);
 
-        if ( ! $this->fileExists($targetFile)) {
+        if (!$this->fileExists($targetFile)) {
             throw new RuntimeException('File ' . $targetFile . ' could not be created');
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if the file exists, if not copy it.
+     *
+     * @param string $sourceFile
+     * @param string $targetFile
+     */
+    public function softCopy($sourceFile, $targetFile)
+    {
+        if (!$this->fileExists($targetFile)) {
+            copy($sourceFile, $targetFile);
         }
 
         return true;
@@ -138,7 +153,7 @@ trait ManageDirectory
      */
     public function rmdir($dir)
     {
-        if ( ! $this->dirExists($dir)) {
+        if (!$this->dirExists($dir)) {
             return true;
         }
 
@@ -161,7 +176,7 @@ trait ManageDirectory
      */
     public function mkdir($dir)
     {
-        if ( ! @mkdir($dir) && ! is_dir($dir)) {
+        if (!@mkdir($dir) && !is_dir($dir)) {
             throw new RuntimeException('Could not create directory: ' . $dir);
         }
 
@@ -198,5 +213,29 @@ trait ManageDirectory
     public function removeGitRepo($path)
     {
         $this->rmdir($path . DS . '.git');
+    }
+
+    /**
+     * Removes the directory recursively.
+     *
+     * @param string $dir
+     * @return void
+     */
+    public function rrmdir(string $dir)
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object !== "." && $object !== "..") {
+                    if (filetype($dir . "/" . $object) === "dir") {
+                        $this->rrmdir($dir . "/" . $object);
+                    } else {
+                        unlink($dir . "/" . $object);
+                    }
+                }
+            }
+            reset($objects);
+            rmdir($dir);
+        }
     }
 }
